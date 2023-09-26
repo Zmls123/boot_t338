@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace表示当前配置文件建立和UserMapper接口之间的映射关系-->
+<mapper namespace="com.gxa.boot338.mapper.CouponMapper">
+<!--    useGeneratedKeys:自动增长 传入的对象的id可以获取生成的字段值
+        keyProperty：对象中自动增长的属性
+
+-->
+    <resultMap id="couponMap" type="Coupon">
+        <id column="cp_id" property="cpId"></id>
+        <result column="cp_title" property="cpTitle"></result>
+        <result column="cp_desc" property="cpDesc"></result>
+        <result column="cp_role" property="cpRole"></result>
+        <result column="cp_collect_expire" property="cpCollectExpire"></result>
+        <result column="cp_use_expire" property="cpUseExpire"></result>
+        <result column="cp_img" property="cpImg"></result>
+    </resultMap>
+    <insert id="addCoupon" parameterType="Coupon" useGeneratedKeys="true" keyProperty="cpId">
+        insert into `tb_coupon` (`cp_title`,`cp_desc`,`cp_role`,`cp_collect_expire`,`cp_use_expire`,`cp_img`)
+            values(#{cpTitle},#{cpDesc},#{cpRole},#{cpCollectExpire},#{cpUseExpire},#{cpImg})
+    </insert>
+    <select id="selectCpnGetList" parameterType="int" resultMap="couponMap">
+        SELECT `cp_id`,`cp_title`,`cp_desc`,`cp_role`,`cp_collect_expire`,`cp_use_expire`,`cp_img` FROM tb_coupon
+        WHERE cp_collect_expire>NOW()AND cp_off=1 AND
+            cp_id NOT IN(SELECT cp_id FROM tb_get WHERE user_id=#{userId})
+        ORDER BY cp_collect_expire
+    </select>
+<!--    < 表示标签的意思，所以使用&lt;代替-->
+    <select id="selectCpnNotGetList" parameterType="int" resultMap="couponMap">
+        SELECT `cp_title`,`cp_desc`,`cp_role`,`cp_collect_expire`,`cp_use_expire`,`cp_img` FROM tb_coupon
+        WHERE cp_collect_expire &lt;NOW()
+        AND cp_off=1
+        AND cp_id NOT IN(SELECT cp_id FROM tb_get WHERE user_id=1)
+        ORDER BY cp_collect_expire DESC
+    </select>
+</mapper>

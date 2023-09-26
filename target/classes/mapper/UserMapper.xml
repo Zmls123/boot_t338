@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace表示当前配置文件建立和UserMapper接口之间的映射关系-->
+<mapper namespace="com.gxa.boot338.mapper.UserMapper">
+    <!-- select标签表示要执行一个SELECT类型的sql操作
+    id: 关联对应的UserMapper接口中的方法
+    parameterType: 关联对应的UserMapper接口中的方法的参数
+    resultType: 关联对应的UserMapper接口中的方法的返回类型
+    select标签中定义要执行的sql语句
+    #{id} 表示 ?占位符,同时用参数id传值-->
+    <!--当数据表的字段名和实体类中的属性命名不一致,mybatis就不能完成自动赋值给属性(同名才可以)
+    这个时候就需要resultMap来把表中的字段和类中的属性之间的映射关系建立起来,
+    从而让mybatis在完成查询后,找到对应的属性, 并利用setter赋值-->
+    <resultMap id="userMap" type="com.gxa.boot338.entity.pojo.User">
+        <id column="user_id" property="id"/>
+        <result column="user_nickName" property="nickName"/>
+        <result column="user_name" property="username"/>
+        <result column="phone" property="phone"/>
+        <result column="user_regTime" property="regTime"/>
+    </resultMap>
+    <delete id="deleteById" parameterType="Integer">
+        delete from tb_user where id=#{id}
+    </delete>
+    <select id="getById" parameterType="String" resultMap="userMap">
+    select `id`,`username`,`grade`,`password` from tb_user where `username`=#{username}
+</select>
+<select id="getAll" resultMap="userMap">
+    select `id`,`username`,`grade` from tb_user
+</select>
+
+<!--string是mybatis设计的一个Java类型String的一个类型别名-->
+<select id="selectByName" parameterType="String" resultMap="userMap">
+    select `id`,`username`,`grade` from tb_user where `username`=#{username}
+</select>
+    <select id="getByPhone" resultMap="userMap">
+        select `user_id`,`user_nickName`,`user_name`,`user_phone`,`user_regTime` from tb_user where `user_phone`=#{phone}
+    </select>
+    <insert id="insertUser" parameterType="User">
+        insert into `tb_user` (`user_name`,`user_phone`,`user_regTime`) values (#{username},#{phone},#{regTime})
+    </insert>
+</mapper>
